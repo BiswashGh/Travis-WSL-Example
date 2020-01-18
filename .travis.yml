@@ -8,7 +8,7 @@
 os: 
   - windows
 
-language: go
+language: bash
 
 before_install:
 - |-
