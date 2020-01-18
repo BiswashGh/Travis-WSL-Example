@@ -1,0 +1,18 @@
+# Travis CI Configuration
+#
+# https://docs.travis-ci.com/
+
+
+# At the time of this writing, chrome only works on Ubuntu Trusty
+# https://docs.travis-ci.com/user/chrome
+os: 
+  - windows
+
+
+before_install:
+- |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        choco install wsl-ubuntu-1804
+        ;;
+    esac
