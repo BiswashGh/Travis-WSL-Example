@@ -18,5 +18,5 @@ before_install:
       ;;
     esac
 
-install:
-  - ./install
+script:
+  - wsl ./install && ./test
