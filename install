@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Back end tools
+if [ -n "${VIRTUAL_ENV-}" ]; then
+  # Needed for Travis CI environment
+  echo "Reusing existing virtual environment $VIRTUAL_ENV"
+else
+  python3 -m venv env
+  set +ux  # the activate script does some bad bash juju
+  echo "+ source env/bin/activate"
+  source env/bin/activate
+  set -ux
+
+  # Use a local tmpdir to work around a bug in pip that shows
+  # up on  CAEN linux
+
+  # 09/20/2019 at 15:38:04 EDT (GMT-0400) by Joshua Bell: So the root of the
+  # problem is a bug in pip relating to the os.rename function. From the docs:
+  # "The operation may fail on some Unix flavors if src and dst are on
+  # different filesystems." Since you are attempting to upgrade pip in an AFS
+  # hosted directory this is most likely the cause of the error.
+  mkdir -p tmp
+  TMPDIR=./tmp pip install --upgrade pip setuptools wheel
+fi
+
+# Front end tools
+if [ ! -x ${VIRTUAL_ENV}/bin/node ]; then
+  pip install nodeenv
+  nodeenv --python-virtualenv
+  set +ux  # the activate script does some bad bash juju
+  source ${VIRTUAL_ENV}/bin/activate
+  set -ux
+fi
+
+# Front end tools - chromedriver
+if ! type -a chromedriver &> /dev/null; then
+  mkdir -p ${VIRTUAL_ENV}/tmp
+  pushd ${VIRTUAL_ENV}/tmp
+  CHROMEDRIVER_VERSION=`curl https://chromedriver.storage.googleapis.com/LATEST_RELEASE`
+  CHROMEDRIVER_ARCH=linux64
+  if [ `uname -s` = "Darwin" ]; then
+    CHROMEDRIVER_ARCH=mac64
+  fi
+  wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_${CHROMEDRIVER_ARCH}.zip
+  unzip chromedriver_${CHROMEDRIVER_ARCH}.zip
+  mv chromedriver ${VIRTUAL_ENV}/bin/
+  popd
+fi
+chromedriver --version
+

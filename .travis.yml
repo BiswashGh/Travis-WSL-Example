@@ -20,6 +20,3 @@ before_install:
 
 install:
   - ./install
-
-script:
-  - ./test
