@@ -12,8 +12,8 @@ language: go
 
 before_install:
 - |-
-    case $TRAVIS_OS_NAME in
-      windows)
+    case $TRAVIS_OS_NAME in windows)
+        choco install python --version=3.6.3
         choco install wsl-ubuntu-1804
-        ;;
+      ;;
     esac
