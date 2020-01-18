@@ -17,3 +17,9 @@ before_install:
         choco install wsl-ubuntu-1804
       ;;
     esac
+
+install:
+  - ./install
+
+script:
+  - ./test
