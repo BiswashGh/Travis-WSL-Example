@@ -19,4 +19,4 @@ before_install:
     esac
 
 script:
-  - wsl ./install && ./test
+  - wsl ./install
